@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { AirbnbRating } from "react-native-ratings"; // Import AirbnbRating from react-native-ratings
-import { AddIcon, Button, EditIcon, Icon } from "../core";
+import { EditIcon, Icon } from "../core";
 import Review from "../ReviewModal";
 import ToiletService from "../../services/ToiletService";
 
@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     padding: 15,
+    height: "auto",
   },
   openModalButton: {
     backgroundColor: "#262758",

@@ -128,10 +128,10 @@ const Filter = ({ visible, onClose }: IProps) => {
         </View>
         <View
           style={{
-            padding: 10,
+            padding: 8,
             display: "flex",
             justifyContent: "flex-end",
-            marginTop: 8,
+            marginTop:185,
             width: "100%",
             gap: 25,
             flexDirection: "row",
