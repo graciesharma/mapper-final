@@ -1,45 +1,11 @@
-import React from "react";
 import {
-  Actionsheet,
-  ActionsheetBackdrop,
-  ActionsheetContent,
-  ActionsheetDragIndicatorWrapper,
-  ActionsheetDragIndicator,
-  VStack,
-  HStack,
-  FormControl,
-  FormControlLabel,
-  FormControlLabelText,
-  InputSlot,
-  Input,
-  InputIcon,
-  InputField,
-  ButtonText,
-  ActionsheetItem,
-  ActionsheetIcon,
-  ActionsheetItemText,
-  Modal,
-  ModalBackdrop,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
+  ButtonText
 } from "@gluestack-ui/themed";
-import {
-  Box,
-  Button,
-  CloseIcon,
-  FavouriteIcon,
-  Heading,
-  Icon,
-  PlayIcon,
-  ShareIcon,
-  Text,
-  TrashIcon,
-} from "./core";
-import { Image, KeyboardAvoidingView } from "react-native";
+import React from "react";
 import { ViewDetailsModal } from "./Menu";
+import {
+  Button
+} from "./core";
 
 function DetailsAccordion() {
   const [showModal, setShowModal] = React.useState(false);

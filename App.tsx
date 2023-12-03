@@ -46,7 +46,7 @@ export default function App() {
   const [initialRegion, setInitialRegion] = useState({
     latitude: 0,
     longitude: 0,
-    latitudeDelta: 5, 
+    latitudeDelta: 5,
     longitudeDelta: 5,
   });
 
@@ -85,7 +85,7 @@ export default function App() {
       });
       fetchLatLng();
     })();
-  }, []); 
+  }, []);
 
   const traceRouteOnReady = (args: any) => {
     if (args) {
@@ -125,8 +125,7 @@ export default function App() {
   }, []);
 
   const handleSearchForToilets = async () => {
-
-    if (selectedToilets.length > 0) {
+    if (selectedToilets?.length > 0) {
       const bounds = selectedToilets.reduce(
         (acc, toilet) => {
           return {
@@ -154,6 +153,16 @@ export default function App() {
 
       mapRef.current?.animateToRegion(newRegion, 1000);
     }
+  };
+
+  const onToiletAddSubmit = (data) => {
+    ToiletService.create(data)
+      .then((value: any) => {
+        fetchLatLng();
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
   return (
@@ -224,7 +233,7 @@ export default function App() {
               </MapView>
             </View>
           ) : (
-           <Spinner/>
+            <Spinner />
           )}
           <ActionSheet
             open={showDirections}
@@ -296,6 +305,7 @@ export default function App() {
           <AddToiletModal
             visible={showAddToiletModal}
             onClose={() => setshowAddToiletModal(false)}
+            onSubmit={onToiletAddSubmit}
           />
         </View>
       </GluestackUIProvider>

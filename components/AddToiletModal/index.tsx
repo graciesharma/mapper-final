@@ -1,52 +1,76 @@
+import { Textarea, TextareaInput } from "@gluestack-ui/themed";
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Modal } from "react-native";
-import MapView, { Marker } from "react-native-maps";
-import { Box, ChevronDownIcon, CloseIcon, Divider, Icon } from "../core";
-import { Select, SelectIcon, SelectInput, SelectTrigger, Textarea, TextareaInput } from "@gluestack-ui/themed";
+import { Modal, Text, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import CustomSelect from "../CustomSelect";
+import MapView, { Marker } from "react-native-maps";
+import { Box, CloseIcon, Divider } from "../core";
 
 interface IProps {
   visible: boolean;
-  onSubmit: (data: { name: string }, amValue: Date, pmValue: Date) => void;
+  onSubmit: any;
   onClose: () => void;
 }
 
 const RestroomAddForm = ({ visible, onClose, onSubmit }: IProps) => {
-  const [amValue, setAmValue] = useState(new Date());
-  const [pmValue, setPmValue] = useState(new Date());
   const [latitude, setLatitude] = useState(27.705404499487766);
   const [longitude, setLongitude] = useState(85.304517365112275);
   const [locationName, setLocationName] = useState("Kathmandu");
   const [countryName, setCountryName] = useState("Nepal");
-  const [images, setImages] = useState(null);
   const [name, setName] = useState("");
-
-  // useEffect(() => {
-  //   if (toiletId) {
-  //   } else {
-  //     setLatitude(27.705404499487766);
-  //     setLongitude(85.304517365112275);
-  //     setLocationName("Kathmandu");
-  //     setCountryName("Nepal");
-  //   }
-  // }, [toiletId]);
+  const [description, setDescription] = useState("");
 
   const onMarkerDragEnd = async (e) => {
     setLatitude(e.nativeEvent.coordinate.latitude);
     setLongitude(e.nativeEvent.coordinate.longitude);
 
     try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${e.nativeEvent.coordinate.latitude},${e.nativeEvent.coordinate.longitude}&key=AIzaSyCkWaxfKNAgjBQHtGKW_rQg6uPnr-zzgFg`
+      );
+      const data = await response.json();
+      if (data.results.length > 0) {
+        const addressResult = data.results[0];
+
+        const locationNameData = addressResult.address_components.filter(
+          (component) => component.types.includes("locality")
+        );
+
+        const countryNameData = addressResult.address_components.filter(
+          (component) => component.types.includes("country")
+        );
+
+        setLocationName(locationNameData[0].long_name);
+        setCountryName(countryNameData[0].long_name);
+      }
     } catch (error) {
       console.error("Error fetching location name:", error);
     }
   };
 
+  const handleToiletDescription = (text: string) => {
+    setDescription(text);
+  };
+
+  const handleNameChange = (text: string) => {
+    setName(text);
+  };
+
   const onHandleSubmit = () => {
-    const data = {
-      name,
-    };
-    onSubmit(data, amValue, pmValue);
+    onSubmit({
+      locationName: locationName,
+      address: `${locationName}, ${countryName}`,
+      countryName: countryName,
+      coords: {
+        latitude,
+        longitude,
+      },
+      description: description,
+      name: name,
+      openingTime: "8:00",
+      closingTime: "20:00",
+      tags: "Gender Neutral",
+    });
+    onClose();
   };
 
   return (
@@ -98,10 +122,13 @@ const RestroomAddForm = ({ visible, onClose, onSubmit }: IProps) => {
             margin: 15,
           }}
         >
-          <TextareaInput placeholder="Toilet Name" />
+          <TextareaInput
+            placeholder="Toilet Name"
+            onChangeText={handleNameChange}
+          />
         </Textarea>
 
-      {/* tags */}
+        {/* tags */}
 
         <Textarea
           isReadOnly={false}
@@ -115,22 +142,10 @@ const RestroomAddForm = ({ visible, onClose, onSubmit }: IProps) => {
             margin: 15,
           }}
         >
-          <TextareaInput placeholder="Description" />
-        </Textarea>
-
-        <Textarea
-          isReadOnly={false}
-          isInvalid={false}
-          isDisabled={false}
-          style={{
-            borderWidth: 1,
-            padding: 10,
-            borderRadius: 8,
-            borderColor: "#d1d6e5",
-            margin: 15,
-          }}
-        >
-          <TextareaInput placeholder="Longitude" />
+          <TextareaInput
+            placeholder="Description"
+            onChangeText={handleToiletDescription}
+          />
         </Textarea>
 
         <Textarea
@@ -145,7 +160,11 @@ const RestroomAddForm = ({ visible, onClose, onSubmit }: IProps) => {
             margin: 15,
           }}
         >
-          <TextareaInput placeholder="Latitude" />
+          <TextareaInput
+            placeholder="Longitude"
+            value={longitude.toString()}
+            editable={false}
+          />
         </Textarea>
 
         <Textarea
@@ -160,11 +179,33 @@ const RestroomAddForm = ({ visible, onClose, onSubmit }: IProps) => {
             margin: 15,
           }}
         >
-          <TextareaInput placeholder="Location" />
+          <TextareaInput
+            placeholder="Latitude"
+            value={latitude.toString()}
+            editable={false}
+          />
+        </Textarea>
+
+        <Textarea
+          isReadOnly={false}
+          isInvalid={false}
+          isDisabled={false}
+          style={{
+            borderWidth: 1,
+            padding: 10,
+            borderRadius: 8,
+            borderColor: "#d1d6e5",
+            margin: 15,
+          }}
+        >
+          <TextareaInput
+            placeholder="Location"
+            value={locationName}
+            editable={false}
+          />
         </Textarea>
 
         <View style={{ padding: 20 }}>
-
           {/* 
         <DateTimePicker
           value={amValue}
