@@ -1,4 +1,4 @@
-import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { View, Dimensions, Text, TouchableOpacity, Button } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import MapViewDirections from "react-native-maps-directions";
@@ -12,14 +12,7 @@ import {
 } from "./components/Menu/ToiletDetails";
 import useLocation from "./hooks/useLocation";
 import { Toilet } from "./interfaces/Toilet";
-import {
-  ListIcon,
-  MapIcon,
-  MapPin,
-  SearchIcon,
-  MapPinIcon,
-} from "lucide-react-native";
-import ToiletMarker from "./illustration/toilet-marker";
+import { ListIcon, MapIcon, MapPin, SearchIcon } from "lucide-react-native";
 import SubmitButton from "./components/SubmitButton";
 import navigateToMapsApp from "./utils/navigateToApp";
 import ActionSheet from "./components/ActionSheet";
@@ -50,6 +43,12 @@ export default function App() {
   const [errorMsg, setErrorMsg] = useState(null);
 
   const [selectedToilets, setSelectedToilets] = useState<Array<Toilet>>(null);
+  const [initialRegion, setInitialRegion] = useState({
+    latitude: 0,
+    longitude: 0,
+    latitudeDelta: 5, 
+    longitudeDelta: 5,
+  });
 
   const [isFetchingToilets, setIsFetchingToilets] = React.useState(false);
 
@@ -78,10 +77,15 @@ export default function App() {
       let location = await Location.getCurrentPositionAsync({});
 
       setLocation(location);
-      // Fetch data when the map loads
+      setInitialRegion({
+        latitude: location?.coords?.latitude || 0,
+        longitude: location?.coords?.longitude || 0,
+        latitudeDelta: 0.04,
+        longitudeDelta: 0.04,
+      });
       fetchLatLng();
     })();
-  }, []); // Empty dependency array means this effect runs once, similar to componentDidMount
+  }, []); 
 
   const traceRouteOnReady = (args: any) => {
     if (args) {
@@ -120,20 +124,37 @@ export default function App() {
     );
   }, []);
 
-  if (!location || isFetchingToilets)
-    return (
-      <View
-        style={{
-          height: "100%",
-          width: "100%",
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Spinner color="#262758" size="large" />
-      </View>
-    );
+  const handleSearchForToilets = async () => {
+
+    if (selectedToilets.length > 0) {
+      const bounds = selectedToilets.reduce(
+        (acc, toilet) => {
+          return {
+            minLatitude: Math.min(acc.minLatitude, toilet.coords.latitude),
+            maxLatitude: Math.max(acc.maxLatitude, toilet.coords.latitude),
+            minLongitude: Math.min(acc.minLongitude, toilet.coords.longitude),
+            maxLongitude: Math.max(acc.maxLongitude, toilet.coords.longitude),
+          };
+        },
+        {
+          minLatitude: Number.MAX_VALUE,
+          maxLatitude: Number.MIN_VALUE,
+          minLongitude: Number.MAX_VALUE,
+          maxLongitude: Number.MIN_VALUE,
+        }
+      );
+
+      const newRegion = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: Math.abs(bounds.maxLatitude - bounds.minLatitude) * 1.5,
+        longitudeDelta:
+          Math.abs(bounds.maxLongitude - bounds.minLongitude) * 1.5,
+      };
+
+      mapRef.current?.animateToRegion(newRegion, 1000);
+    }
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -158,13 +179,7 @@ export default function App() {
                 ref={mapRef}
                 style={styles.map}
                 provider={PROVIDER_GOOGLE}
-                initialRegion={{
-                  latitude: location?.coords?.latitude || 0,
-                  longitude: location?.coords?.longitude || 0,
-                  latitudeDelta: 0.04,
-                  longitudeDelta: 0.04,
-                }}
-                region={location}
+                initialRegion={initialRegion}
                 showsUserLocation={true}
                 zoomEnabled={true}
               >
@@ -173,7 +188,7 @@ export default function App() {
                     latitude: location?.coords?.latitude || 0,
                     longitude: location?.coords?.longitude || 0,
                   }}
-                  title="Your Current Location"
+                  title={userLocation}
                 />
 
                 {location && selectedToilet && showDirections && (
@@ -194,7 +209,7 @@ export default function App() {
                         <Marker
                           key={index}
                           coordinate={marker?.coords}
-                          title={`Marker ${index + 1}`}
+                          title={marker?.name}
                           onPress={() => handleMarkerPress(marker)}
                         >
                           <Icon as={ILLMap} />
@@ -209,17 +224,7 @@ export default function App() {
               </MapView>
             </View>
           ) : (
-            <View
-              style={{
-                height: "100%",
-                width: "100%",
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text>Loading...</Text>
-            </View>
+           <Spinner/>
           )}
           <ActionSheet
             open={showDirections}
@@ -271,7 +276,7 @@ export default function App() {
                 </View>
                 <SubmitButton
                   //  @ts-expect-error
-                  onPress={fetchLatLng}
+                  onPress={handleSearchForToilets}
                   text="Search For Toilets Nearby"
                   icon={SearchIcon}
                   isLoading={isFetchingToilets}

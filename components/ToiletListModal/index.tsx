@@ -30,15 +30,14 @@ const ToiletListModal: React.FC<ToiletListModalProps> = ({
   const [filteredToilets, setFilteredToilets] = useState<Toilet[]>(toilets);
 
   const filterToiletsByRadius = (radius: number) => {
-    const userLocation = { latitude: 0, longitude: 0 }; // Replace with actual user's location
-
+    const userLocation = { latitude: 0, longitude: 0 }; 
     const haversine = (
       lat1: number,
       lon1: number,
       lat2: number,
       lon2: number
     ): number => {
-      const R = 6371; // Radius of the Earth in kilometers
+      const R = 6371;
       const dLat = (lat2 - lat1) * (Math.PI / 180);
       const dLon = (lon2 - lon1) * (Math.PI / 180);
       const a =
@@ -170,9 +169,9 @@ const ToiletListModal: React.FC<ToiletListModalProps> = ({
 
 const styles = StyleSheet.create({
   container: {
+    padding:5,
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
     width: "100%",
     height: Dimensions.get("window")?.height,
     position: "relative",
