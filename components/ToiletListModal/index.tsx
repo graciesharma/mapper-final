@@ -30,7 +30,7 @@ const ToiletListModal: React.FC<ToiletListModalProps> = ({
   const [filteredToilets, setFilteredToilets] = useState<Toilet[]>(toilets);
 
   const filterToiletsByRadius = (radius: number) => {
-    const userLocation = { latitude: 0, longitude: 0 }; 
+    const userLocation = { latitude: 0, longitude: 0 };
     const haversine = (
       lat1: number,
       lon1: number,
@@ -67,6 +67,20 @@ const ToiletListModal: React.FC<ToiletListModalProps> = ({
   useEffect(() => {
     setFilteredToilets(toilets);
   }, [toilets]);
+
+  const handleSubmit = (values, rating) => {
+    const filtered = filteredToilets.filter((item) => {
+      const hasMatchingTags =
+        values.length === 0 || values.every((tag) => item.tags.includes(tag));
+      const hasMatchingReview =
+        rating === undefined ||
+        //@ts-ignore
+        item.reviews.some((review) => review.rating === rating);
+      return hasMatchingTags && hasMatchingReview;
+    });
+    setFilteredToilets(filtered);
+    setShowFilterModal(false);
+  };
 
   return (
     <Modal visible={visible} animationType="slide">
@@ -107,10 +121,7 @@ const ToiletListModal: React.FC<ToiletListModalProps> = ({
         <Filter
           visible={showFilterModal}
           onClose={() => setShowFilterModal(false)}
-          onFilter={(radius) => {
-            setShowFilterModal(false);
-            filterToiletsByRadius(radius);
-          }}
+          onSubmit={handleSubmit}
         />
 
         <TouchableOpacity
@@ -169,7 +180,7 @@ const ToiletListModal: React.FC<ToiletListModalProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    padding:5,
+    padding: 5,
     flex: 1,
     justifyContent: "center",
     width: "100%",

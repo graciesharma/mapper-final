@@ -14,12 +14,13 @@ import {
 } from "@gluestack-ui/themed";
 import { CloseIcon, Divider } from "../core";
 
-import { AirbnbRating, Rating } from "react-native-ratings";
+import { AirbnbRating } from "react-native-ratings";
 import { ACCESSIBILITY } from "../../const/Accesibility";
 
 interface IProps {
   visible: boolean;
   onClose: () => void;
+  onSubmit: any;
 }
 
 const PROXIMITY_WITHIN = [
@@ -35,8 +36,10 @@ const PROXIMITY_WITHIN = [
   },
 ];
 
-const Filter = ({ visible, onClose }: IProps) => {
+const Filter = ({ visible, onClose, onSubmit }: IProps) => {
   const [values, setValues] = React.useState([]);
+  const [rating, setRating] = React.useState();
+
   return (
     <Modal visible={visible} animationType="slide" style={{ padding: 20 }}>
       <View
@@ -124,6 +127,7 @@ const Filter = ({ visible, onClose }: IProps) => {
             showRating={false}
             selectedColor="#FAC712"
             size={30}
+            onFinishRating={(value) => setRating(value)}
           />
         </View>
         <View
@@ -131,7 +135,7 @@ const Filter = ({ visible, onClose }: IProps) => {
             padding: 8,
             display: "flex",
             justifyContent: "flex-end",
-            marginTop:185,
+            marginTop: 185,
             width: "100%",
             gap: 25,
             flexDirection: "row",
@@ -163,6 +167,7 @@ const Filter = ({ visible, onClose }: IProps) => {
               width: 100,
               borderRadius: 20,
             }}
+            onPress={() => onSubmit(values, rating)}
           >
             <Text
               style={{

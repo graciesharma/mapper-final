@@ -13,6 +13,7 @@ import { Modal, Text, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import MapView, { Marker } from "react-native-maps";
 import { Box, CheckIcon, CloseIcon, Divider } from "../core";
+import { ACCESSIBILITY } from "../../const/Accesibility";
 
 interface IProps {
   visible: boolean;
@@ -20,38 +21,6 @@ interface IProps {
   onClose: () => void;
 }
 
-const TAGS = [
-  {
-    id: "Gender Neutral",
-    value: "Gender Neutral",
-    label: "Gender Neutral",
-  },
-  {
-    id: "Disabled Friendly",
-    value: "Disabled Friendly",
-    label: "Disabled Friendly",
-  },
-  {
-    id: "Senior Friendly",
-    value: "Senior Friendly",
-    label: "Senior Friendly",
-  },
-  {
-    id: "Commercial Building",
-    value: "Commercial Building",
-    label: "Commercial Building",
-  },
-  {
-    id: "Government Building",
-    value: "Government Building",
-    label: "Government Building",
-  },
-  {
-    id: "Hospital",
-    value: "Hospital",
-    label: "Hospital",
-  },
-];
 const RestroomAddForm = ({ visible, onClose, onSubmit }: IProps) => {
   const [latitude, setLatitude] = useState(27.705404499487766);
   const [longitude, setLongitude] = useState(85.304517365112275);
@@ -197,7 +166,7 @@ const RestroomAddForm = ({ visible, onClose, onSubmit }: IProps) => {
               setTags(keys);
             }}
           >
-            {TAGS.map((value) => (
+            {ACCESSIBILITY.map((value) => (
               <Checkbox
                 key={value.id}
                 value={value.value}
