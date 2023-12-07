@@ -2,7 +2,7 @@ export interface Toilet {
   name: string;
   id: number;
   address: string;
-  tags: string;
+  tags: string[];
   description: string;
   coords: {
     latitude: number;

@@ -1,9 +1,18 @@
-import { Textarea, TextareaInput } from "@gluestack-ui/themed";
+import {
+  Checkbox,
+  CheckboxGroup,
+  CheckboxIcon,
+  CheckboxIndicator,
+  CheckboxLabel,
+  Textarea,
+  TextareaInput,
+  VStack,
+} from "@gluestack-ui/themed";
 import React, { useState } from "react";
 import { Modal, Text, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import MapView, { Marker } from "react-native-maps";
-import { Box, CloseIcon, Divider } from "../core";
+import { Box, CheckIcon, CloseIcon, Divider } from "../core";
 
 interface IProps {
   visible: boolean;
@@ -11,6 +20,38 @@ interface IProps {
   onClose: () => void;
 }
 
+const TAGS = [
+  {
+    id: "Gender Neutral",
+    value: "Gender Neutral",
+    label: "Gender Neutral",
+  },
+  {
+    id: "Disabled Friendly",
+    value: "Disabled Friendly",
+    label: "Disabled Friendly",
+  },
+  {
+    id: "Senior Friendly",
+    value: "Senior Friendly",
+    label: "Senior Friendly",
+  },
+  {
+    id: "Commercial Building",
+    value: "Commercial Building",
+    label: "Commercial Building",
+  },
+  {
+    id: "Government Building",
+    value: "Government Building",
+    label: "Government Building",
+  },
+  {
+    id: "Hospital",
+    value: "Hospital",
+    label: "Hospital",
+  },
+];
 const RestroomAddForm = ({ visible, onClose, onSubmit }: IProps) => {
   const [latitude, setLatitude] = useState(27.705404499487766);
   const [longitude, setLongitude] = useState(85.304517365112275);
@@ -18,6 +59,7 @@ const RestroomAddForm = ({ visible, onClose, onSubmit }: IProps) => {
   const [countryName, setCountryName] = useState("Nepal");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [tags, setTags] = useState([]);
 
   const onMarkerDragEnd = async (e) => {
     setLatitude(e.nativeEvent.coordinate.latitude);
@@ -68,7 +110,7 @@ const RestroomAddForm = ({ visible, onClose, onSubmit }: IProps) => {
       name: name,
       openingTime: "8:00",
       closingTime: "20:00",
-      tags: "Gender Neutral",
+      tags: tags,
     });
     onClose();
   };
@@ -119,7 +161,7 @@ const RestroomAddForm = ({ visible, onClose, onSubmit }: IProps) => {
             padding: 10,
             borderRadius: 8,
             borderColor: "#d1d6e5",
-            margin: 15,
+            margin: 10,
           }}
         >
           <TextareaInput
@@ -139,7 +181,7 @@ const RestroomAddForm = ({ visible, onClose, onSubmit }: IProps) => {
             padding: 10,
             borderRadius: 8,
             borderColor: "#d1d6e5",
-            margin: 15,
+            margin: 10,
           }}
         >
           <TextareaInput
@@ -147,6 +189,57 @@ const RestroomAddForm = ({ visible, onClose, onSubmit }: IProps) => {
             onChangeText={handleToiletDescription}
           />
         </Textarea>
+
+        <Box style={{ margin: 10 }}>
+          <CheckboxGroup
+            value={tags}
+            onChange={(keys) => {
+              setTags(keys);
+            }}
+          >
+            {TAGS.map((value) => (
+              <Checkbox
+                key={value.id}
+                value={value.value}
+                isInvalid={false}
+                isDisabled={false}
+                aria-label="Tags"
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "row",
+                  borderWidth: 1,
+                  padding: 10,
+                  borderRadius: 4,
+                  borderColor: "#d1d6e5",
+                  mb: 10,
+                }}
+              >
+                <CheckboxIndicator
+                  mr="$2"
+                  sx={{
+                    height: 20,
+                    width: 20,
+                    borderWidth: 1,
+                    borderRadius: 4,
+                  }}
+                >
+                  <CheckboxIcon
+                    as={CheckIcon}
+                    sx={{
+                      backgroundColor: "#23256A",
+                      color: "white",
+                      marginRight: 20,
+                    }}
+                  />
+                </CheckboxIndicator>
+                <CheckboxLabel sx={{ color: "#0C121D" }}>
+                  {value.label}
+                </CheckboxLabel>
+              </Checkbox>
+            ))}
+          </CheckboxGroup>
+        </Box>
 
         <Textarea
           isReadOnly={false}
@@ -157,7 +250,7 @@ const RestroomAddForm = ({ visible, onClose, onSubmit }: IProps) => {
             padding: 10,
             borderRadius: 8,
             borderColor: "#d1d6e5",
-            margin: 15,
+            margin: 10,
           }}
         >
           <TextareaInput
@@ -176,7 +269,7 @@ const RestroomAddForm = ({ visible, onClose, onSubmit }: IProps) => {
             padding: 10,
             borderRadius: 8,
             borderColor: "#d1d6e5",
-            margin: 15,
+            margin: 10,
           }}
         >
           <TextareaInput
@@ -195,7 +288,7 @@ const RestroomAddForm = ({ visible, onClose, onSubmit }: IProps) => {
             padding: 10,
             borderRadius: 8,
             borderColor: "#d1d6e5",
-            margin: 15,
+            margin: 10,
           }}
         >
           <TextareaInput

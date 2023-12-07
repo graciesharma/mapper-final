@@ -60,7 +60,7 @@ export const PrimaryDetails = (details: Partial<Toilet>) => {
           marginBottom: 10,
         }}
       >
-        {details?.tags?.split(",")?.map?.((data, index) => (
+        {details?.tags?.map?.((data, index) => (
           <Badge
             mr={10}
             key={index}
